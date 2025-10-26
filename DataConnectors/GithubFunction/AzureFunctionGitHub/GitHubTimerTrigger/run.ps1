@@ -6,7 +6,7 @@
     Last Modified:  03/29/2021
     
     DESCRIPTION
-    This Function App calls the GitHub REST API (https://api.github.com/) to pull the GitHub
+    This Function App calls the GitHub REST API (https://api.github.com/) or (https://api.domain.ghe.com) to pull the GitHub
     Audit, Repo and Vulnerability logs. The response from the GitHub API is recieved in JSON format. This function will build the signature and authorization header 
     needed to post the data to the Log Analytics workspace via the HTTP Data Connector API. The Function App will post each log type to their individual tables in Log Analytics, for example,
     Github_CL and GitHubRepoLogs_CL.
@@ -40,6 +40,7 @@ $LAURI = $env:LAURI
 $storageAccountContainer = "github-repo-logs"
 $AuditLogTable = "GitHub_CL"
 $RepoLogTable = "GitHubRepoLogs_CL"
+$GitHubAPIEndpoint = "https://" + $env:GitHubAPIEndpoint
 
 $currentStartTime = (get-date).ToUniversalTime() | get-date  -Format yyyy-MM-ddTHH:mm:ss:ffffffZ
 
@@ -251,7 +252,7 @@ foreach($org in $githubOrgs){
     #Get the Audit Entries
     Write-Host "Starting to process ORG: $orgName Audit Entries"
     $hasNextPage = $true
-    $uri = "https://api.github.com/graphql"
+    $uri = "https://$GitHubAPIEndpoint/graphql"
     do {
         $results = $null
         $results = Invoke-RestMethod -Method Post -Uri $uri -Body $AuditQuery -Headers $headers
@@ -292,7 +293,7 @@ foreach($org in $githubOrgs){
     $hasMoreRepos = $true
     $pageNumber = 1
     do {
-        $uri = "https://api.github.com/orgs/$orgName/repos?page=$pageNumber"
+        $uri = "https://$GitHubAPIEndpoint/orgs/$orgName/repos?page=$pageNumber"
         $results = Invoke-RestMethod -Method GET -Uri $uri -Headers $headers
         $repoList += $results
         if($results.Count -eq 0){
@@ -311,7 +312,7 @@ foreach($org in $githubOrgs){
     #For Each Repo in Org, get repo logs
     foreach($repo in $repoList){
         $repoName = $repo.Name        
-        $uri = "https://api.github.com/repos/$orgName/$repoName/contributors"
+        $uri = "https://$GitHubAPIEndpoint/repos/$orgName/$repoName/contributors"
         $contributorsInfo = Invoke-WebRequest -Method Get -Uri $uri -Headers $headers -UseBasicParsing
         Write-Host $contributorsInfo.statuscode
         # Status 204 represents No Content - ie., empty repo
@@ -319,7 +320,7 @@ foreach($org in $githubOrgs){
         {
             Write-Host "Starting to process ORG: $orgName Repo: $repoName"
 
-            $uri = "https://api.github.com/repos/$orgName/$repoName/traffic/popular/referrers"
+            $uri = "https://$GitHubAPIEndpoint/repos/$orgName/$repoName/traffic/popular/referrers"
             $referrerLogs = $null
             $referrerLogs = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
             if ($referrerLogs.Length -gt 0){
@@ -331,7 +332,7 @@ foreach($org in $githubOrgs){
             }
             
 
-            $uri = "https://api.github.com/repos/$orgName/$repoName/traffic/popular/paths"
+            $uri = "https://$GitHubAPIEndpoint/repos/$orgName/$repoName/traffic/popular/paths"
             $pathLogs = $null
             $pathLogs = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
             if ($pathLogs.Length -gt 0){
@@ -341,8 +342,8 @@ foreach($org in $githubOrgs){
                 #Send to log A;
                 SendToLogA -gitHubData $pathLogs -customLogName $RepoLogTable
             }
-            
-            $uri = "https://api.github.com/repos/$orgName/$repoName/traffic/views"
+
+            $uri = "https://$GitHubAPIEndpoint/repos/$orgName/$repoName/traffic/views"
             $viewLogs = $null
             $viewLogs = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
             if ($viewLogs.Length -gt 0){
@@ -353,7 +354,7 @@ foreach($org in $githubOrgs){
                 SendToLogA -gitHubData $viewLogs -customLogName $RepoLogTable
             }
 
-            $uri = "https://api.github.com/repos/$orgName/$repoName/traffic/clones"
+            $uri = "https://$GitHubAPIEndpoint/repos/$orgName/$repoName/traffic/clones"
             $cloneLogs = $null
             $cloneLogs = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
             if ($cloneLogs.Length -gt 0){
@@ -364,7 +365,7 @@ foreach($org in $githubOrgs){
                 SendToLogA -gitHubData $cloneLogs -customLogName $RepoLogTable
             }        
 
-            $uri = "https://api.github.com/repos/$orgName/$repoName/commits"
+            $uri = "https://$GitHubAPIEndpoint/repos/$orgName/$repoName/commits"
             $commitLogs = $null
             $commitLogs = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
             if ($commitLogs.Length -gt 0){
@@ -374,8 +375,8 @@ foreach($org in $githubOrgs){
                 #Send to log A
                 SendToLogA -gitHubData $commitLogs -customLogName $RepoLogTable
             }
-            
-            $uri = "https://api.github.com/repos/$orgName/$repoName/collaborators"
+
+            $uri = "https://$GitHubAPIEndpoint/repos/$orgName/$repoName/collaborators"
             $collaboratorLogs = $null
             $collaboratorLogs = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
             if ($collaboratorLogs.Length -gt 0){
@@ -386,7 +387,7 @@ foreach($org in $githubOrgs){
                 SendToLogA -gitHubData $collaboratorLogs -customLogName $RepoLogTable
             }        
 
-            $uri = "https://api.github.com/repos/$orgName/$repoName/forks"
+            $uri = "https://$GitHubAPIEndpoint/repos/$orgName/$repoName/forks"
             $forkLogs = $null
             $forkLogs = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
             if ($forkLogs.Length -gt 0){
@@ -397,7 +398,7 @@ foreach($org in $githubOrgs){
                 SendToLogA -gitHubData $forkLogs -customLogName $RepoLogTable
             }
 
-			$uri = "https://api.github.com/repos/$orgName/$repoName/secret-scanning/alerts"
+			$uri = "https://$GitHubAPIEndpoint/repos/$orgName/$repoName/secret-scanning/alerts"
             $secretscanningalerts = $null
             $secretscanningalerts = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
             if ($secretscanningalerts.Length -gt 0){
@@ -449,7 +450,7 @@ foreach($org in $githubOrgs){
         $vulnList = @()
         $uri = $null
         do {
-            $uri = "https://api.github.com/graphql"
+            $uri = "https://$GitHubAPIEndpoint/graphql"
             $results = $null
             $results = Invoke-RestMethod -Method Post -Uri $uri -Headers $headers -Body $VulnQuery
             if(($results.data.organization.repository.vulnerabilityAlerts.nodes).Count -ne 0){
