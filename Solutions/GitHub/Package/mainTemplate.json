@@ -57,6 +57,13 @@
       "metadata": {
         "description": "subscription id where Microsoft Sentinel is setup"
       }
+    },
+    "githubApiEndpoint": {
+      "type": "string",
+      "defaultValue": "api.github.com",
+      "metadata": {
+        "description": "GitHub API endpoint"
+      }
     }
   },
   "variables": {
@@ -5438,6 +5445,10 @@
               "defaultValue": "apikey",
               "type": "securestring",
               "minLength": 1
+            },
+            "innerGithubApiEndpoint": {
+              "defaultValue": "[parameters('githubApiEndpoint')]",
+              "type": "securestring"
             }
           },
           "variables": {
@@ -5504,7 +5515,7 @@
                   "type": "APIKey"
                 },
                 "request": {
-                  "apiEndpoint": "[[concat('https://api.github.com/enterprises/',parameters('enterprisename'),'/audit-log?include=all')]",
+                  "apiEndpoint": "[[concat('https://',parameters('innerGithubApiEndpoint'),'/enterprises/',parameters('enterprisename'),'/audit-log?include=all')]",
                   "rateLimitQPS": 50,
                   "queryWindowInMin": 15,
                   "httpMethod": "GET",
@@ -5629,6 +5640,12 @@
                                 "requestObjectKey": "apiEndpoint",
                                 "placeHolderName": "{{placeHolder1}}",
                                 "placeHolderValue": ""
+                              },
+                              {
+                                "displayText": "GitHub API Endpoint",
+                                "requestObjectKey": "apiEndpoint",
+                                "placeHolderName": "{{githubApiEndpoint}}",
+                                "placeHolderValue": "" 
                               }
                             ]
                           },
@@ -5651,7 +5668,7 @@
                     "APIKeyIdentifier": "token"
                   },
                   "request": {
-                    "apiEndpoint": "https://api.github.com/organizations/{{placeHolder1}}/audit-log?include=all",
+                    "apiEndpoint": "https://{{githubApiEndpoint}}/organizations/{{placeHolder1}}/audit-log?include=all",
                     "rateLimitQPS": 50,
                     "queryWindowInMin": 15,
                     "httpMethod": "Get",
@@ -5829,7 +5846,13 @@
                         "requestObjectKey": "apiEndpoint",
                         "placeHolderName": "{{placeHolder1}}",
                         "placeHolderValue": ""
-                      }
+                      },
+                      {
+                        "displayText": "GitHub API Endpoint",
+                        "requestObjectKey": "apiEndpoint",
+                        "placeHolderName": "{{githubApiEndpoint}}",
+                        "placeHolderValue": ""
+                      }                      
                     ]
                   },
                   "type": "APIKey"
@@ -5851,7 +5874,7 @@
             "APIKeyIdentifier": "token"
           },
           "request": {
-            "apiEndpoint": "https://api.github.com/organizations/{{placeHolder1}}/audit-log?include=all",
+            "apiEndpoint": "https://{{githubApiEndpoint}}/organizations/{{placeHolder1}}/audit-log?include=all",
             "rateLimitQPS": 50,
             "queryWindowInMin": 15,
             "httpMethod": "Get",
