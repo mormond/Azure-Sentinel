@@ -57,13 +57,6 @@
       "metadata": {
         "description": "subscription id where Microsoft Sentinel is setup"
       }
-    },
-    "githubApiEndpoint": {
-      "type": "string",
-      "defaultValue": "api.github.com",
-      "metadata": {
-        "description": "GitHub API endpoint"
-      }
     }
   },
   "variables": {
@@ -3257,6 +3250,16 @@
                                   {
                                     "type": "Textbox",
                                     "parameters": {
+                                      "label": "GitHub API Endpoint",
+                                      "placeholder": "api.github.com",
+                                      "description": "For GitHub Enterprise Cloud, use 'api.github.com'. For GitHub Enterprise Cloud with data residency, use the form 'api.{enterprise}.ghe.com'",
+                                      "type": "text",
+                                      "name": "githubApiEndpoint"
+                                    }
+                                  },
+                                  {
+                                    "type": "Textbox",
+                                    "parameters": {
                                       "label": "Enterprise Name",
                                       "placeholder": "Enter Enterprise Name",
                                       "description": "Your enterprise profile URL is https://github.com/enterprises/yourenterprisename",
@@ -5334,6 +5337,16 @@
                           {
                             "type": "Textbox",
                             "parameters": {
+                              "label": "GitHub API Endpoint",
+                              "placeholder": "api.github.com",
+                              "description": "For GitHub Enterprise Cloud, use 'api.github.com'. For GitHub Enterprise Cloud with data residency, use the form 'api.{enterprise}.ghe.com'",
+                              "type": "text",
+                              "name": "githubApiEndpoint"
+                            }
+                          },
+                          {
+                            "type": "Textbox",
+                            "parameters": {
                               "label": "Enterprise Name",
                               "placeholder": "Enter Enterprise Name",
                               "description": "Your enterprise profile URL is https://github.com/enterprises/yourenterprisename",
@@ -5446,9 +5459,10 @@
               "type": "securestring",
               "minLength": 1
             },
-            "innerGithubApiEndpoint": {
-              "defaultValue": "[parameters('githubApiEndpoint')]",
-              "type": "securestring"
+            "githubApiEndpoint": {
+              "defaultValue": "githubApiEndpoint",
+              "type": "securestring",
+              "minLength": 1
             }
           },
           "variables": {
@@ -5515,7 +5529,7 @@
                   "type": "APIKey"
                 },
                 "request": {
-                  "apiEndpoint": "[[concat('https://',parameters('innerGithubApiEndpoint'),'/enterprises/',parameters('enterprisename'),'/audit-log?include=all')]",
+                  "apiEndpoint": "[[concat('https://',parameters('githubApiEndpoint'),'/enterprises/',parameters('enterprisename'),'/audit-log?include=all')]",
                   "rateLimitQPS": 50,
                   "queryWindowInMin": 15,
                   "httpMethod": "GET",
