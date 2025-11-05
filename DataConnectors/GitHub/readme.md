@@ -16,7 +16,8 @@ This user will be used to grant access to the Key Vault secret.
 "principalId": The user object ID​ for the user
 "workspaceId": The Sentinel Workspace ID​
 "workSpaceKey": The Sentinel Workspace Key
- ```
+"GitHub API EndPoint": Defaults to api.github.com. For GHEC with data residency, enter your custom domain eg api.octocorp.ghe.com.
+```
 4. There are two json files (`ORGS.json` and `lastrun-Audit.json`).
 5. Edit the `ORGS.json` file and update `"org": "sampleorg"` and replace sample org with your org name.  If you have addtional orgs, add another line `{"org": "sampleorg"}` for each org.
 6. Upload the `ORGS.json`, and `lastrun-Audit.json` to the storage account githublogicapp container.
