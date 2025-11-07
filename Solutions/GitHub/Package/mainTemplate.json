@@ -3252,7 +3252,7 @@
                                     "parameters": {
                                       "label": "GitHub API Endpoint",
                                       "placeholder": "api.github.com",
-                                      "description": "For GitHub Enterprise Cloud, use 'api.github.com'. For GitHub Enterprise Cloud with data residency, use the form 'api.{enterprise}.ghe.com'",
+                                      "description": "For GitHub Enterprise Cloud, use 'api.github.com'. For GitHub Enterprise Cloud with data residency, use the form 'api.{enterprise_name}.ghe.com'",
                                       "type": "text",
                                       "name": "githubApiEndpoint"
                                     }
@@ -3262,7 +3262,7 @@
                                     "parameters": {
                                       "label": "Enterprise Name",
                                       "placeholder": "Enter Enterprise Name",
-                                      "description": "Your enterprise profile URL is https://github.com/enterprises/yourenterprisename",
+                                      "description": "Your enterprise profile URL is either https://github.com/enterprises/{enterprise_name} or, for GitHub Enterprise Cloud with data residency, https://{enterprise_name}.ghe.com",
                                       "type": "text",
                                       "name": "enterprisename"
                                     }
@@ -5339,7 +5339,7 @@
                             "parameters": {
                               "label": "GitHub API Endpoint",
                               "placeholder": "api.github.com",
-                              "description": "For GitHub Enterprise Cloud, use 'api.github.com'. For GitHub Enterprise Cloud with data residency, use the form 'api.{enterprise}.ghe.com'",
+                              "description": "For GitHub Enterprise Cloud, use 'api.github.com'. For GitHub Enterprise Cloud with data residency, use the form 'api.{enterprise_name}.ghe.com'",
                               "type": "text",
                               "name": "githubApiEndpoint"
                             }
@@ -5349,7 +5349,7 @@
                             "parameters": {
                               "label": "Enterprise Name",
                               "placeholder": "Enter Enterprise Name",
-                              "description": "Your enterprise profile URL is https://github.com/enterprises/yourenterprisename",
+                              "description": "Your enterprise profile URL is either https://github.com/enterprises/{enterprise_name} or, for GitHub Enterprise Cloud with data residency, https://{enterprise_name}.ghe.com",
                               "type": "text",
                               "name": "enterprisename"
                             }
